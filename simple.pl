@@ -58,18 +58,30 @@ sub color
         }
 }
 
+
 my $app = SDLx::App->new( h => 4*100,
                           w => 6*100,
                         );
 
-for (my $x=0; $x<=$app->width; $x++) {
-        my $real = -2.0+$x*(3.0/$app->width);
-        for (my $y=0; $y<=$app->height; $y++ ) {
-                my $imag = -1.0+$y*(2.0/$app->height);
-                my $color = color($real, $imag);
-                $app->[$x][$y] = $color;
+sub mandelbrot
+{
+        my ($left, $right, $upper, $lower, $app) = @_;
+        my $x_size = $right*1.0 - $left;
+        my $y_size = $upper*1.0 - $lower;
+
+
+        for (my $x=0; $x<=$app->width; $x++) {
+                my $real = $left+$x*($x_size/$app->width);
+                for (my $y=0; $y<=$app->height; $y++ ) {
+                        my $imag = $lower+$y*($y_size/$app->height);
+                        my $color = color($real, $imag);
+                        $app->[$x][$y] = $color;
+                }
+                $app->update;
         }
-        $app->update;
 }
+
+mandelbrot(-0.5, 0.5, 1, 0.5, $app);
+
 say "done";
 my $line = <>;
