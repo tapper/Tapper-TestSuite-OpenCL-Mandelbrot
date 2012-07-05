@@ -3,10 +3,11 @@
 use common::sense;
 
 use SDLx::App;
-use constant { 
-        ZYKLEN           => 1200,
+use constant {
+        ZYKLEN           => 100,
+        DIVERGENZGRENZE  => 1.e23,
+        KONVERGENZGRENZE => 1.e-23,
 };
-
 
 sub color
 {
@@ -14,16 +15,34 @@ sub color
         my ($real, $imag, $c);
         my $counter;
 
-        $real = $x; $imag = $y;
-        $counter = 0;
+        # $real = $x; $imag = $y;
+        # $counter = 0;
+        # my $counter;
+
+        my ($a, $b);
+        my ($qua, $qub);
+        my $qu;
         my $counter;
-        for (1..ZYKLEN) {
-                $counter=$_;
-                $imag = 2 * $real * $imag - $y;
-                $real = $real**2 - $imag**2 - $x;
-                $c = sqrt($real**2 + $imag**2);
-                last if $c > 2;
-        }
+
+        $a = $x; $b = $y;
+        $counter = 0;
+        $qua = $a * $a; $qub = $b * $b;
+        do {
+                $b = 2 * $a * $b - $y;
+                $a = $qua - $qub - $x;
+                $qu = ($qua = $a * $a) + ($qub = $b * $b);
+        } while ($qu < DIVERGENZGRENZE  and
+                 $qu > KONVERGENZGRENZE and
+                 $counter++ < ZYKLEN);
+
+
+        # for (1..ZYKLEN) {
+        #         $counter=$_;
+        #         $imag = 2 * $real * $imag - $y;
+        #         $real = $real**2 - $imag**2 - $x;
+        #         $c = $real**2 + $imag**2;
+        #         last if $c > 2;
+        # }
         if ($counter >= ZYKLEN) {
                 # I want the Mandelbrot set to be colored black
                 return 0;
