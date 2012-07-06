@@ -4,7 +4,7 @@ use common::sense;
 
 use SDLx::App;
 use constant {
-        ZYKLEN           => 100,
+        ZYKLEN           => 1200,
         DIVERGENZGRENZE  => 1.e23,
         KONVERGENZGRENZE => 1.e-23,
 };
@@ -35,7 +35,6 @@ sub color
                  $qu > KONVERGENZGRENZE and
                  $counter++ < ZYKLEN);
 
-
         # for (1..ZYKLEN) {
         #         $counter=$_;
         #         $imag = 2 * $real * $imag - $y;
@@ -59,29 +58,29 @@ sub color
 }
 
 
-my $app = SDLx::App->new( h => 4*100,
-                          w => 6*100,
+my $app = SDLx::App->new( h => 480,
+                          w => 640,
+                          exit_on_quit => 1,
                         );
 
-sub mandelbrot
+sub mandelbrot_perl
 {
         my ($left, $right, $upper, $lower, $app) = @_;
         my $x_size = $right*1.0 - $left;
         my $y_size = $upper*1.0 - $lower;
 
-
-        for (my $x=0; $x<=$app->width; $x++) {
+        for (my $x=0; $x<$app->width; $x++) {
                 my $real = $left+$x*($x_size/$app->width);
-                for (my $y=0; $y<=$app->height; $y++ ) {
+                for (my $y=0; $y<$app->height; $y++ ) {
                         my $imag = $lower+$y*($y_size/$app->height);
                         my $color = color($real, $imag);
                         $app->[$x][$y] = $color;
                 }
-                $app->update;
+                $app->update
         }
 }
 
-mandelbrot(-0.5, 0.5, 1, 0.5, $app);
 
-say "done";
-my $line = <>;
+mandelbrot_perl(-0.5, -0.25, 0.75, 0.5, $app);
+
+$app->update;
