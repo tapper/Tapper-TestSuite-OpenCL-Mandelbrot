@@ -13,7 +13,7 @@ __kernel void color(
         uint x_pos = get_global_id(0);
         uint y_pos = get_global_id(1);
         const double x = left  + x_pos*(right - left)/get_global_size(0);
-        const double y = upper + y_pos*(lower - upper)/get_global_size(1);
+        const double y = upper - y_pos*(upper - lower)/get_global_size(1);
         double real = x;
         double imag = y;
 
@@ -23,8 +23,8 @@ __kernel void color(
         double qua = real * real;
         double qub = imag * imag;
         do {
-                imag = 2 * real * imag - y;
-                real = qua - qub - x;
+                imag = 2 * real * imag + y;
+                real = qua - qub +  x;
                 qua = real * real;
                 qub = imag * imag;
                 qu = qua + qub;
@@ -35,7 +35,7 @@ __kernel void color(
 
         if (counter >= cycles) {
                 // I want the Mandelbrot set to be colored black
-                output[x_pos + y_pos * get_global_size(0)]= 0;
+                output[y_pos + x_pos * get_global_size(0)]= 0;
         } else {
                 /* Idea behind this: Since we have 32bit color depth, we
                    have 2**32 color values. We devide the whole color set
