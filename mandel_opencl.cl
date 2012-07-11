@@ -9,6 +9,7 @@ __kernel void color(
         )
 {
 
+        uint cycles = 600;
         uint x_pos = get_global_id(0);
         uint y_pos = get_global_id(1);
         const double x = left  + x_pos*(right - left)/get_global_size(0);
@@ -29,9 +30,10 @@ __kernel void color(
                 qu = qua + qub;
         } while (qu < 1.e23  &&
                  qu > 1.e-23 &&
-                 counter++ < 1200);
+                 counter++ < cycles);
+ 
 
-        if (counter >= 1200) {
+        if (counter >= cycles) {
                 // I want the Mandelbrot set to be colored black
                 output[x_pos + y_pos * get_global_size(0)]= 0;
         } else {
@@ -40,8 +42,9 @@ __kernel void color(
                    into as many subsets as $counter can have values. Now
                    $counter tells us which subset to take and from this
                    subset we always use the middle element. */
-                uint size_part    = 4294967296 / 1200;
-                uint choosen_part = (counter * size_part + (counter - 1) * size_part) / 2;
-                output[x_pos + y_pos * get_global_size(0)] = choosen_part;
+                uint size_part    = 16777216 / cycles;
+                uint choosen_part = ((counter * size_part + (counter - 1) * size_part) / 2) << 8;
+                choosen_part = choosen_part | 0xff;
+                output[y_pos + x_pos * get_global_size(0)] = choosen_part;
         }
 }
