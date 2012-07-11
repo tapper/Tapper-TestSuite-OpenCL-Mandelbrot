@@ -31,7 +31,7 @@ __kernel void color(
         } while (qu < 1.e23  &&
                  qu > 1.e-23 &&
                  counter++ < cycles);
- 
+
 
         if (counter >= cycles) {
                 // I want the Mandelbrot set to be colored black
