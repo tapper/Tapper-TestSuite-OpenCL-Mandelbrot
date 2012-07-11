@@ -54,7 +54,21 @@ $app->add_event_handler(
                                         $region->{right}  = $x_pos + ($x_width/2)*0.5;
                                         $region->{top}    = $y_pos + ($y_width/2)*0.5;
                                         $region->{bottom} = $y_pos - ($y_width/2)*0.5;
+                                } elsif ($event->type == SDL_MOUSEBUTTONDOWN and $event->button_button == SDL_BUTTON_RIGHT) {
+
+                                        # new rectangle is 90% the size of the old one and centered around the mouse click
+                                        my $x_width = $region->{right} - $region->{left};
+                                        my $y_width = $region->{top} - $region->{bottom};
+
+                                        my $x_pos   = $region->{left} + ($x_width / $app->w) * $event->button_x;
+                                        my $y_pos   = $region->{bottom}  + ($y_width / $app->h) * $event->button_y;
+
+                                        $region->{left}   = $x_pos - ($x_width/2)*2;
+                                        $region->{right}  = $x_pos + ($x_width/2)*2;
+                                        $region->{top}    = $y_pos + ($y_width/2)*2;
+                                        $region->{bottom} = $y_pos - ($y_width/2)*2;
                                 }
-                        });
+                        }
+                );
 
 $app->run;
