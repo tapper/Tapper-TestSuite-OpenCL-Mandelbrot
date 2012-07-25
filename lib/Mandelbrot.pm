@@ -5,6 +5,7 @@ use common::sense;
 
 use OpenCL;
 use File::Slurp;
+use Mandelbrot::OpenCL;
 
 use constant {
         ZYKLEN           => 1200,
@@ -17,38 +18,9 @@ sub mandelbrot_cl
 {
         my ($left, $right, $upper, $lower, $options) = @_;
 
-        
-        
-        my @platforms = OpenCL::platforms;
-        my $platform = $platforms[0];
+        my $opencl = Mandelbrot::OpenCL->instance();
         my ($width, $height) = ($options->{width}, $options->{height});
-        
-        my $dev;
-        {
-                no warnings 'uninitialized';
-                if ($options->{device} eq 'CPU') {
-                        $dev = OpenCL::DEVICE_TYPE_CPU;
-                } elsif ($options->{device} eq 'GPU') {
-                        $dev = OpenCL::DEVICE_TYPE_GPU;
-                } else {
-                        die "Choose GPU or CPU to run on\n";
-                }
-        }
-        my $device=($platform->devices($dev))[0];
-        my $ctx = $platform->context(undef, [$device], undef);
-        my $queue = $ctx->queue ($device);
-        my $data;
-
-        my $src = File::Slurp::read_file('./mandel_opencl.cl');
-        my $prog = $ctx->program_with_source ($src);
-
-        # build croaks on compile errors, so catch it and print the compile errors
-        eval { $prog->build ($device, "");1 }
-          or die $prog->build_log($device);
-        my $kernel = $prog->kernel ("color");
-
-        my $output = $ctx->buffer (0, OpenCL::SIZEOF_UINT * $width * $height );
-
+        my ($kernel, $queue, $output) = $opencl->prepare($options);
 
         # set buffer
         $kernel->set_buffer (0, $output);
@@ -56,9 +28,11 @@ sub mandelbrot_cl
         $kernel->set_double  (2, $right);
         $kernel->set_double  (3, $upper);
         $kernel->set_double  (4, $lower);
+        $kernel->set_uint    (5, $options->{cycles} || 600);
 
+        my $data;
         $queue->enqueue_nd_range_kernel ($kernel, undef, [$width, $height], undef );
-        $queue->enqueue_read_buffer ($output, 1, 0, OpenCL::SIZEOF_UINT * $width * $height, $data);
+        $queue->enqueue_read_buffer ($output, 1, 0, 3 * $width * $height, $data);
         return $data;
 }
 
@@ -67,11 +41,6 @@ sub color
 {
         my ($x, $y) = @_;
         my ($real, $imag, $c);
-        my $counter;
-
-        # $real = $x; $imag = $y;
-        # $counter = 0;
-        # my $counter;
 
         my ($a, $b);
         my ($qua, $qub);
