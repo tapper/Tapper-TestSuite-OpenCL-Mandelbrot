@@ -1,36 +1,32 @@
 #pragma OPENCL EXTENSION cl_amd_printf : enable
 
+typedef double2 cdouble;
+inline cdouble  cmult(cdouble a, cdouble b){
+    return (cdouble)( a.x*b.x - a.y*b.y, a.x*b.y + a.y*b.x);
+}
+
 __kernel void color(
         __global uint * const output,
         const double left,
         const double right,
         const double upper,
-        const double lower
+        const double lower,
+        const uint cycles
         )
 {
 
-        uint cycles = 600;
         uint x_pos = get_global_id(0);
         uint y_pos = get_global_id(1);
         const double x = left  + x_pos*(right - left)/get_global_size(0);
         const double y = upper - y_pos*(upper - lower)/get_global_size(1);
-        double real = x;
-        double imag = y;
-
-
+        cdouble c = (cdouble) (x, y) ;
+        cdouble z = 0 ;
+        
         uint counter = 0;
-        double qu;
-        double qua = real * real;
-        double qub = imag * imag;
+
         do {
-                imag = 2 * real * imag + y;
-                real = qua - qub +  x;
-                qua = real * real;
-                qub = imag * imag;
-                qu = qua + qub;
-        } while (qu < 1.e23  &&
-                 qu > 1.e-23 &&
-                 counter++ < cycles);
+                z = cmult(z,z) + c;
+        } while ( length (z) < 2 && counter++ < cycles);
 
 
         if (counter >= cycles) {
