@@ -51,10 +51,9 @@ $app->add_show_handler(
 
 
                               my $image_data = "P6\n".$app->w."\n".$app->h."\n255\n".$field;
-                              open my $fh, ">", "/tmp/file.pnm" or die "Can not open file:$!";
-                              print $fh $image_data;
-                              close $fh;
-                              my $surface = SDL::Image::load( "/tmp/file.pnm" );
+                              my $rw = SDL::RWOps->new_const_mem( $image_data );
+
+                              my $surface = SDL::Image::load_PNM_rw( $rw );
                               $app->blit_by($surface);
                               $app->update;
 
