@@ -1,5 +1,6 @@
 package Mandelbrot;
 
+our $VERSION=1;
 
 use common::sense;
 
@@ -105,3 +106,11 @@ sub mandelbrot_perl
 
 
 1;
+
+=head1 ACKNOWLEDGEMENTS
+
+=head1 COPYRIGHT & LICENSE
+
+Copyright 2012 OSRC SysInt Team, all rights reserved.
+
+This program is released under the following license: bsd
