@@ -1,4 +1,4 @@
-package Mandelbrot;
+package Tapper::TestSuite::OpenCL::Mandelbrot;
 
 our $VERSION=1;
 
@@ -6,7 +6,7 @@ use common::sense;
 
 use OpenCL;
 use File::Slurp;
-use Mandelbrot::OpenCL;
+use Tapper::TestSuite::OpenCL::Mandelbrot::OpenCL;
 
 use constant {
         ZYKLEN           => 1200,
@@ -19,7 +19,7 @@ sub mandelbrot_cl
 {
         my ($left, $right, $upper, $lower, $options) = @_;
 
-        my $opencl = Mandelbrot::OpenCL->instance();
+        my $opencl = Tapper::TestSuite::OpenCL::Mandelbrot::OpenCL->instance();
         my ($width, $height) = ($options->{width}, $options->{height});
         my ($kernel, $queue, $output) = $opencl->prepare($options);
 

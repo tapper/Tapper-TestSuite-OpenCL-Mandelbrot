@@ -1,18 +1,12 @@
-package Mandelbrot::OpenCL;
-
-
+package Tapper::TestSuite::OpenCL::Mandelbrot::OpenCL;
 
 =head1 NAME
 
-Mandelbrot::OpenCL - A Mandelbrot set calculator with OpenCL support
+Tapper::TestSuite::OpenCL::Mandelbrot::OpenCL - A Mandelbrot set calculator with OpenCL support
 
 =head1 SYNOPSIS
 
-
-
 =head1 DESCRIPTION
-
-
 
 =cut
 
@@ -60,9 +54,9 @@ sub prepare
                 my $cl_file;
                 
                 if ($options->{vector}) {
-                        $cl_file = module_file(  'Mandelbrot::OpenCL',  'mandel_opencl_vector.cl');
+                        $cl_file = module_file(  'Tapper::TestSuite::OpenCL::Mandelbrot::OpenCL',  'mandel_opencl_vector.cl');
                 } else {
-                        $cl_file = module_file(  'Mandelbrot::OpenCL',  'mandel_opencl.cl');
+                        $cl_file = module_file(  'Tapper::TestSuite::OpenCL::Mandelbrot::OpenCL',  'mandel_opencl.cl');
                 }
                 
                 my $src = File::Slurp::read_file($cl_file);
